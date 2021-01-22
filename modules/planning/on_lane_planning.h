@@ -102,6 +102,8 @@ class OnLanePlanning : public PlanningBase {
   void AddFallbackTrajectory(const planning_internal::Debug& debug_info,
                              planning_internal::Debug* debug_chart);
 
+  void ResetPlanning();
+
  private:
   routing::RoutingResponse last_routing_;
   std::unique_ptr<ReferenceLineProvider> reference_line_provider_;

@@ -21,11 +21,17 @@
 #include <list>
 #include <utility>
 
+#include "gtest/gtest_prod.h"
+
 #include "absl/strings/str_cat.h"
+
+#include "modules/planning/proto/planning_internal.pb.h"
+#include "modules/planning/proto/planning_semantic_map_config.pb.h"
+#include "modules/routing/proto/routing.pb.h"
+
 #include "cyber/common/file.h"
 #include "cyber/common/log.h"
 #include "cyber/time/clock.h"
-#include "gtest/gtest_prod.h"
 #include "modules/common/math/quaternion.h"
 #include "modules/common/vehicle_state/vehicle_state_provider.h"
 #include "modules/map/hdmap/hdmap_util.h"
@@ -37,12 +43,9 @@
 #include "modules/planning/common/util/util.h"
 #include "modules/planning/learning_based/img_feature_renderer/birdview_img_feature_renderer.h"
 #include "modules/planning/planner/rtk/rtk_replay_planner.h"
-#include "modules/planning/proto/planning_internal.pb.h"
-#include "modules/planning/proto/planning_semantic_map_config.pb.h"
 #include "modules/planning/reference_line/reference_line_provider.h"
 #include "modules/planning/tasks/task_factory.h"
 #include "modules/planning/traffic_rules/traffic_decider.h"
-#include "modules/routing/proto/routing.pb.h"
 
 namespace apollo {
 namespace planning {
@@ -71,6 +74,22 @@ OnLanePlanning::~OnLanePlanning() {
   injector_->planning_context()->mutable_planning_status()->Clear();
   last_routing_.Clear();
   injector_->ego_info()->Clear();
+}
+
+void OnLanePlanning::ResetPlanning() {
+  if (reference_line_provider_) {
+    reference_line_provider_->Stop();
+  }
+  planner_->Stop();
+  injector_->frame_history()->Clear();
+  injector_->history()->Clear();
+  injector_->planning_context()->mutable_planning_status()->Clear();
+  last_routing_.Clear();
+  injector_->ego_info()->Clear();
+
+  AERROR << "PLANNING MODULE RESET";
+
+  Init(config_);
 }
 
 std::string OnLanePlanning::Name() const { return "on_lane_planning"; }
@@ -276,6 +295,9 @@ void OnLanePlanning::RunOnce(const LocalView& local_view,
     ptr_trajectory_pb->set_gear(canbus::Chassis::GEAR_DRIVE);
     FillPlanningPb(start_timestamp, ptr_trajectory_pb);
     GenerateStopTrajectory(ptr_trajectory_pb);
+
+    ResetPlanning();  // reset planning to continue generating reference lines
+
     return;
   }
 
