@@ -100,7 +100,8 @@ def load_descrptions(files):
                     trace = obstacle.get('trace', [])
                     for i in range(1, len(trace)):
                         if same_point(trace[i], trace[i - 1]):
-                            print('same trace point found in obstacle: %s' % obstacle["id"])
+                            print('same trace point found in obstacle: %s' %
+                                  obstacle["id"])
                             return None
                     objects.append(obstacle)
             else:  # Default case. handles only one obstacle
@@ -108,7 +109,8 @@ def load_descrptions(files):
                 trace = obstacle.get('trace', [])
                 for i in range(1, len(trace)):
                     if same_point(trace[i], trace[i - 1]):
-                        print('same trace point found in obstacle: %s' % obstacle["id"])
+                        print('same trace point found in obstacle: %s' %
+                              obstacle["id"])
                         return None
                 objects.append(obstacle)
 
@@ -276,11 +278,16 @@ def perception_publisher(perception_channel, files, period):
     global _s_delta_t
     _s_delta_t = period
     perception = None
+
+    current_time = time.time()
     while not cyber.is_shutdown():
         perception = generate_perception(perception_description, perception)
-        print(str(perception))
         writer.write(perception)
         time.sleep(sleep_time)
+
+        if time.time() - current_time > 15:
+            cyber.shutdown()
+            break
 
 
 if __name__ == '__main__':
