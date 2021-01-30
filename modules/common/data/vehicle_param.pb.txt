@@ -46,3 +46,7 @@ vehicle_param {
       settling_time: 0.0
   }
 }
+
+DEFINE_string(vehicle_config_path,
+              "/apollo/modules/common/data/vehicle_param.pb.txt",
+              "the file path of vehicle config file");
