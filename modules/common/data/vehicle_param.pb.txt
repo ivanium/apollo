@@ -47,6 +47,3 @@ vehicle_param {
   }
 }
 
-DEFINE_string(vehicle_config_path,
-              "/apollo/modules/common/data/vehicle_param.pb.txt",
-              "the file path of vehicle config file");
