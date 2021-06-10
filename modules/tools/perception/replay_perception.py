@@ -23,6 +23,7 @@ on json configurations
 
 import argparse
 import math
+from threading import Timer
 import time
 
 import simplejson
@@ -35,7 +36,7 @@ from modules.perception.proto.perception_obstacle_pb2 import PerceptionObstacles
 
 
 _s_seq_num = 0
-_s_delta_t = 0.1
+_s_delta_t = 0.3
 _s_epsilon = 1e-8
 
 
@@ -234,6 +235,11 @@ def linear_project_perception(description, prev_perception):
             perception.theta = math.atan2(trace[i][1] - trace[i - 1][1],
                                           trace[i][0] - trace[i - 1][0])
 
+            perception.velocity.x = description["speed"] * \
+                math.cos(perception.theta)
+            perception.velocity.y = description["speed"] * \
+                math.sin(perception.theta)
+
             perception.ClearField("polygon_point")
             perception.polygon_point.extend(generate_polygon(perception.position, perception.theta,
                                                              perception.length, perception.width))
@@ -271,21 +277,23 @@ def perception_publisher(perception_channel, files, period):
     Publisher
     """
     cyber.init()
-    node = cyber.Node("perception")
+    node = cyber.Node("perception_gen")
     writer = node.create_writer(perception_channel, PerceptionObstacles)
-    perception_description = load_descrptions(files)
-    sleep_time = int(1.0 / period)  # 10Hz
-    global _s_delta_t
-    _s_delta_t = period
-    perception = None
 
-    current_time = time.time()
+    start_time = time.time()
+
+    perception_description = load_descrptions(files)
+    sleep_time = 1.0 / period  #Hz
+    global _s_delta_t
+    perception = None
     while not cyber.is_shutdown():
         perception = generate_perception(perception_description, perception)
+        print(str(perception))
         writer.write(perception)
         time.sleep(sleep_time)
+        current_time = time.time()
 
-        if time.time() - current_time > 15:
+        if current_time - start_time >= 30:
             cyber.shutdown()
             break
 
