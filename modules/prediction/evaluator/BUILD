@@ -31,23 +31,6 @@ cc_library(
     ],
 )
 
-cc_test(
-    name = "evaluator_manager_test",
-    size = "small",
-    srcs = ["evaluator_manager_test.cc"],
-    data = [
-        "//modules/prediction:prediction_data",
-        "//modules/prediction:prediction_testdata",
-    ],
-    linkopts = [
-        "-lgomp",
-    ],
-    deps = [
-        "//modules/prediction/common:kml_map_based_test",
-        "//modules/prediction/evaluator:evaluator_manager",
-    ],
-)
-
 cc_library(
     name = "evaluator",
     hdrs = ["evaluator.h"],
