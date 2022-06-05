@@ -63,6 +63,11 @@ void JunctionMLPEvaluator::Clear() {}
 
 bool JunctionMLPEvaluator::Evaluate(Obstacle* obstacle_ptr,
                                     ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated JunctionMLPWvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated JunctionMLPWvaluator" << "\n";
   // Sanity checks.
   omp_set_num_threads(1);
   Clear();

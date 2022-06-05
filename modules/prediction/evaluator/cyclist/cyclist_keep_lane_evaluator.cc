@@ -15,6 +15,7 @@
  *****************************************************************************/
 
 #include "modules/prediction/evaluator/cyclist/cyclist_keep_lane_evaluator.h"
+#include <fstream>
 
 namespace apollo {
 namespace prediction {
@@ -25,6 +26,11 @@ CyclistKeepLaneEvaluator::CyclistKeepLaneEvaluator() {
 
 bool CyclistKeepLaneEvaluator::Evaluate(
     Obstacle* obstacle_ptr, ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated CyclistKeepLaneEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated CyclistKeepLaneEvaluator" << "\n";
   CHECK_NOTNULL(obstacle_ptr);
 
   obstacle_ptr->SetEvaluatorType(evaluator_type_);

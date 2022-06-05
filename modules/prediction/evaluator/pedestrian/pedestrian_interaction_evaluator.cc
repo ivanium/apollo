@@ -81,6 +81,11 @@ torch::Tensor PedestrianInteractionEvaluator::GetSocialPooling() {
 
 bool PedestrianInteractionEvaluator::Evaluate(
     Obstacle* obstacle_ptr, ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated PedestrianInteractionEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated PedestrianInteractionEvaluator" << "\n";
   // Sanity checks.
   CHECK_NOTNULL(obstacle_ptr);
 

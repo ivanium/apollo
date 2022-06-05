@@ -41,6 +41,11 @@ void SemanticLSTMEvaluator::Clear() {}
 
 bool SemanticLSTMEvaluator::Evaluate(Obstacle* obstacle_ptr,
                                      ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated SemanticLSTMEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated SemanticLSTMEvaluator" << "\n";
   omp_set_num_threads(1);
 
   obstacle_ptr->SetEvaluatorType(evaluator_type_);

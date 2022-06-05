@@ -46,6 +46,11 @@ void LaneAggregatingEvaluator::LoadModel() {
 
 bool LaneAggregatingEvaluator::Evaluate(
     Obstacle* obstacle_ptr, ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated LaneAggregatingEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated LaneAggregatingEvaluator" << "\n";
   // Sanity checks.
   CHECK_NOTNULL(obstacle_ptr);
 

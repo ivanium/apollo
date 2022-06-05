@@ -51,6 +51,11 @@ bool LaneScanningEvaluator::Evaluate(Obstacle* obstacle_ptr,
 bool LaneScanningEvaluator::Evaluate(Obstacle* obstacle_ptr,
                                      ObstaclesContainer* obstacles_container,
                                      std::vector<Obstacle*> dynamic_env) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated LaneScanningEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated LaneScanningEvaluator" << "\n";
   // Sanity checks.
   omp_set_num_threads(1);
   CHECK_NOTNULL(obstacle_ptr);

@@ -16,6 +16,7 @@
 
 #include "modules/prediction/evaluator/vehicle/cost_evaluator.h"
 #include "modules/prediction/common/prediction_util.h"
+#include <fstream>
 
 namespace apollo {
 namespace prediction {
@@ -26,6 +27,12 @@ CostEvaluator::CostEvaluator() {
 
 bool CostEvaluator::Evaluate(Obstacle* obstacle_ptr,
                              ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated CostEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated CostEvaluator" << "\n";
+                              
   CHECK_NOTNULL(obstacle_ptr);
 
   obstacle_ptr->SetEvaluatorType(evaluator_type_);

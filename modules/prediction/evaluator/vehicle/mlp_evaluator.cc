@@ -53,6 +53,11 @@ void MLPEvaluator::Clear() {}
 
 bool MLPEvaluator::Evaluate(Obstacle* obstacle_ptr,
                             ObstaclesContainer* obstacles_container) {
+  std::ofstream auto_t_file;
+  auto_t_file.open("haoran_test.txt", std::ios::app);
+  auto_t_file << "Evaluated MLPEvaluator" << std::endl;
+  auto_t_file.close();
+  // AINFO << "!!!!!!!!!!!!!!!!!Evaluated MLPEvaluator" << "\n";
   Clear();
   CHECK_NOTNULL(obstacle_ptr);
   CHECK_LE(LANE_FEATURE_SIZE, 4 * FLAGS_max_num_lane_point);
