@@ -36,6 +36,9 @@
 #include "modules/prediction/evaluator/vehicle/mlp_evaluator.h"
 #include "modules/prediction/evaluator/vehicle/semantic_lstm_evaluator.h"
 
+// // YIFAN added
+#include <fstream>
+
 namespace apollo {
 namespace prediction {
 
@@ -182,6 +185,18 @@ void EvaluatorManager::Init(const PredictionConf& config) {
         << cyclist_on_lane_evaluator_ << "]";
   AINFO << "Defined default on lane obstacle evaluator ["
         << default_on_lane_evaluator_ << "]";
+
+  std::ofstream autot_file;
+  autot_file.open("yifan_test.txt", std::ios::app);
+  autot_file << "YIFAN: init evaluators: " <<
+    vehicle_in_junction_caution_evaluator_ << "," <<
+    vehicle_on_lane_evaluator_ << "," <<
+    vehicle_default_caution_evaluator_ << "," <<
+    cyclist_on_lane_evaluator_ << "," <<
+    pedestrian_evaluator_ << "," <<
+    default_on_lane_evaluator_ <<
+    std::endl;
+  autot_file.close();
 }
 
 Evaluator* EvaluatorManager::GetEvaluator(
@@ -239,8 +254,21 @@ void EvaluatorManager::EvaluateObstacle(Obstacle* obstacle,
                                         std::vector<Obstacle*> dynamic_env) {
   Evaluator* evaluator = nullptr;
   // Select different evaluators depending on the obstacle's type.
+  std::ofstream autot_file;
+  // autot_file.open("yifan_test.txt", std::ios::app);
+  // autot_file << "YIFAN: evaluate obstacle!!" << std::endl;
+  // autot_file.close();
   switch (obstacle->type()) {
     case PerceptionObstacle::VEHICLE: {
+      autot_file.open("yifan_test.txt", std::ios::app);
+      autot_file << "YIFAN: encounter vehicle obstacle: " <<
+        obstacle->IsCaution() << "," <<
+        obstacle->IsSlow() << "," <<
+        obstacle->IsNearJunction() << "," <<
+        obstacle->IsOnLane() << "," <<
+        obstacle->HasJunctionFeatureWithExits() <<
+        std::endl;
+      autot_file.close();
       if (obstacle->IsCaution() && !obstacle->IsSlow()) {
         if (obstacle->IsNearJunction()) {
           evaluator = GetEvaluator(vehicle_in_junction_caution_evaluator_);
@@ -251,6 +279,9 @@ void EvaluatorManager::EvaluateObstacle(Obstacle* obstacle,
         }
         CHECK_NOTNULL(evaluator);
         // Evaluate and break if success
+        autot_file.open("yifan_test.txt", std::ios::app);
+        autot_file << "YIFAN: " << evaluator->GetName() << std::endl;
+        autot_file.close();
         if (evaluator->Evaluate(obstacle, obstacles_container)) {
           break;
         } else {
@@ -270,6 +301,9 @@ void EvaluatorManager::EvaluateObstacle(Obstacle* obstacle,
         break;
       }
       CHECK_NOTNULL(evaluator);
+      autot_file.open("yifan_test.txt", std::ios::app);
+      autot_file << "YIFAN: " << evaluator->GetName() << std::endl;
+      autot_file.close();
       if (evaluator->GetName() == "LANE_SCANNING_EVALUATOR") {
         evaluator->Evaluate(obstacle, obstacles_container, dynamic_env);
       } else {
@@ -278,28 +312,54 @@ void EvaluatorManager::EvaluateObstacle(Obstacle* obstacle,
       break;
     }
     case PerceptionObstacle::BICYCLE: {
+      autot_file.open("yifan_test.txt", std::ios::app);
+      autot_file << "YIFAN: encounter bicycle obstacle: " <<
+        obstacle->IsOnLane() <<
+        std::endl;
+      autot_file.close();
       if (obstacle->IsOnLane()) {
         evaluator = GetEvaluator(cyclist_on_lane_evaluator_);
         CHECK_NOTNULL(evaluator);
+        autot_file.open("yifan_test.txt", std::ios::app);
+        autot_file << "YIFAN: " << evaluator->GetName() << std::endl;
+        autot_file.close();
         evaluator->Evaluate(obstacle, obstacles_container);
       }
       break;
     }
     case PerceptionObstacle::PEDESTRIAN: {
+      autot_file.open("yifan_test.txt", std::ios::app);
+      autot_file << "YIFAN: encounter Pedestrain obstacle: " <<
+        FLAGS_prediction_offline_mode << "," <<
+        PredictionConstants::kDumpDataForLearning << "," <<
+        obstacle->latest_feature().priority().priority() << "," <<
+        ObstaclePriority::CAUTION << std::endl;
+      autot_file.close();
       if (FLAGS_prediction_offline_mode ==
               PredictionConstants::kDumpDataForLearning ||
           obstacle->latest_feature().priority().priority() ==
               ObstaclePriority::CAUTION) {
         evaluator = GetEvaluator(pedestrian_evaluator_);
         CHECK_NOTNULL(evaluator);
+        autot_file.open("yifan_test.txt", std::ios::app);
+        autot_file << "YIFAN: " << evaluator->GetName() << std::endl;
+        autot_file.close();
         evaluator->Evaluate(obstacle, obstacles_container);
         break;
       }
     }
     default: {
+      autot_file.open("yifan_test.txt", std::ios::app);
+      autot_file << "YIFAN: encounter default obstacle: " <<
+        "type: " << obstacle->type() << "," <<
+        obstacle->IsOnLane() <<
+        std::endl;
       if (obstacle->IsOnLane()) {
         evaluator = GetEvaluator(default_on_lane_evaluator_);
         CHECK_NOTNULL(evaluator);
+        autot_file.open("yifan_test.txt", std::ios::app);
+        autot_file << "YIFAN: " << evaluator->GetName() << std::endl;
+        autot_file.close();
         evaluator->Evaluate(obstacle, obstacles_container);
       }
       break;
